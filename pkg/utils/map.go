@@ -14,19 +14,24 @@
     limitations under the License.
 */
 
-package version
+package utils
 
-import "fmt"
-
-// Terrascan The Terrascan version
-const Terrascan = "1.18.0"
-
-// Get returns the terrascan version
-func Get() string {
-	return fmt.Sprintf("v%s", Terrascan)
-}
-
-// GetNumeric returns the numeric terrascan version
-func GetNumeric() string {
-	return Terrascan
+// MergeMaps merges two maps, the second map values overriding first map
+func MergeMaps(a, b map[interface{}]interface{}) map[interface{}]interface{} {
+	out := make(map[interface{}]interface{}, len(a))
+	for k, v := range a {
+		out[k] = v
+	}
+	for k, v := range b {
+		if v, ok := v.(map[interface{}]interface{}); ok {
+			if bv, ok := out[k]; ok {
+				if bv, ok := bv.(map[interface{}]interface{}); ok {
+					out[k] = MergeMaps(bv, v)
+					continue
+				}
+			}
+		}
+		out[k] = v
+	}
+	return out
 }
